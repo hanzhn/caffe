@@ -58,11 +58,14 @@ Please cite SSD in your publications if it helps your research:
   cp Makefile.config.example Makefile.config
   make -j8
   # Make sure to include $CAFFE_ROOT/python to your PYTHONPATH.
+  # Or it will raise "undefined reference to `google::protobuf..." error
   make py
   make test -j8
   # (Optional)
   make runtest -j8
   ```
+  # Use python 'import caffe' to make sure your caffe is successfully installed
+  # If 'no module named google.protobuf.internal', reinstall protobuf use "pip install protobuf" without sudo.
 
 ### Preparation
 1. Download [fully convolutional reduced (atrous) VGGNet](https://gist.github.com/weiliu89/2ed6e13bfd5b57cf81d6). By default, we assume the model is stored in `$CAFFE_ROOT/models/VGGNet/`
