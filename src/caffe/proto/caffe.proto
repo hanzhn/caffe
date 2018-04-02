@@ -1312,6 +1312,14 @@ message MultiBoxLossParameter {
   optional NonMaximumSuppressionParameter nms_param = 21;
   optional int32 sample_size = 22 [default = 64];
   optional bool use_prior_for_nms = 23 [default = false];
+  //added by hz
+  // Parameters used for select scale.
+  optional int32 max_w = 24 [default = -1];
+  optional int32 min_w = 25 [default = -1];
+  optional int32 max_h = 26 [default = -1];
+  optional int32 min_h = 27 [default = -1];
+  optional int32 img_w = 28;
+  optional int32 img_h = 29;
 }
 
 message MVNParameter {

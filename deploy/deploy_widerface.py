@@ -18,12 +18,12 @@ writeProposals = 1
 
 drawGth = 0
 drawResults = 0
-showResults = 0
+showResults = 1
 
-experiment_name = 'caffe-ssd-fpn-convfuse-reduce-1024'
+experiment_name = 'sfd-fpn-640kernel1-1024'
 caffe.set_mode_gpu()
-net = caffe.Net('/home/smiles/hz/caffe-ssd/models/VGGNet/VOC0712/SSD_fpn/conv_fuse/reduce/deploy.prototxt',
-                '/home/smiles/hz/caffe-ssd/models/VGGNet/VOC0712/SSD_fpn/conv_fuse/reduce/VGGNet_SSD_512x512_concat_convfuse_reduce_iter_40000.caffemodel',
+net = caffe.Net('/home/smiles/hz/caffe-ssd/models/sfd_models/VGGNet/WIDER_FACE/SFD/fpn/640/deploy.prototxt',
+                '/home/smiles/hz/caffe-ssd/models/sfd_models/VGGNet/WIDER_FACE/SFD/fpn/640/VGG_WIDER_FACE_SFD_fpn_640_iter_120000.caffemodel',
                 caffe.TEST)
 # set net to batch size of 50
 net.blobs['data'].reshape(1,3,640,640)
@@ -72,7 +72,7 @@ def drawFaces(img, faces, ellipses):
         xmax = int(face[1])
         ymin = int(face[2])
         ymax = int(face[3])
-        cv2.putText(img,str(prob),(max(int(xmin),0), max(int(ymin),0)),font,0.4,(0,0,255),1)#添加文字，1.2表示字体大小，（0,40）是初始的位置，(255,255,255)表示颜色，2表示粗细
+        #cv2.putText(img,str(prob),(max(int(xmin),0), max(int(ymin),0)),font,0.4,(0,0,255),1)#添加文字，1.2表示字体大小，（0,40）是初始的位置，(255,255,255)表示颜色，2表示粗细
         cv2.rectangle( img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), (0,255,0) )
     for ellipse in ellipses:      
         centerx = int( float(ellipse[3]) )
@@ -100,7 +100,7 @@ while line:
     wpic = img.shape[1]
     print(img.shape)
     #break
-    if hpic <= 3072 and hpic > 256 and wpic <= 3072 and wpic >256:
+    if hpic <= 2048 and hpic > 256 and wpic <= 2048 and wpic >256:
         net.blobs['data'].reshape(1,3,hpic,wpic)
     #elif hpic <= 256 and wpic <= 256:
     else:
@@ -138,11 +138,11 @@ while line:
             #cv2.destroyAllWindows()
         if drawResults:
             templist = line.split('/')
-            picpath = "/home/smiles/hz/databases/FDDB/"+experiment_name+"_result/"+'/'.join( templist[0:len(templist)-1] )
+            picpath = "/home/smiles/hz/databases/WIDER-face/proposal_results/"+experiment_name+"/"+'/'.join( templist[len(templist)-4:len(templist)-1] )
             if not os.path.isdir(picpath):
                 #print 'New experiment. Good luck!'
                 os.makedirs(picpath)
-            cv2.imwrite("/home/smiles/hz/databases/FDDB/"+experiment_name+"_result/"+line+".jpg", img)
+            cv2.imwrite(picpath+"/"+templist[-1], img)
             
     if writeProposals:
         savedir = "/home/smiles/hz/databases/WIDER-face/eval_tools/proposals/"+experiment_name
