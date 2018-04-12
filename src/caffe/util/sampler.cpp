@@ -99,8 +99,10 @@ void SampleBBox(const Sampler& sampler, NormalizedBBox* sampled_bbox) {
   caffe_rng_uniform(1, sampler.min_aspect_ratio(), sampler.max_aspect_ratio(),
       &aspect_ratio);
 
-  aspect_ratio = std::max<float>(aspect_ratio, std::pow(scale, 2.));
-  aspect_ratio = std::min<float>(aspect_ratio, 1 / std::pow(scale, 2.));
+  //comments by hz
+  //for keep the sampled box square.
+  //aspect_ratio = std::max<float>(aspect_ratio, std::pow(scale, 2.));
+  //aspect_ratio = std::min<float>(aspect_ratio, 1 / std::pow(scale, 2.));
 
   // Figure out bbox dimension.
   float bbox_width = scale * sqrt(aspect_ratio);
