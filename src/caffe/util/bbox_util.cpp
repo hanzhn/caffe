@@ -735,7 +735,10 @@ void MatchBBox(const vector<NormalizedBBox>& gt_bboxes,
       continue;
     }
     for (map<float, int>::iterator it = overlaps_larger[j].end();
-         it != overlaps_larger[j].begin() && match_num[j] < min_match; ++it) {
+         it != overlaps_larger[j].begin(); --it) {
+      if (match_num[j] >= min_match){
+        break;
+      }
       int i = it->second;
       if ((*match_indices)[i] != -1) {
         // The prediction already has matched ground truth or is ignored.
@@ -971,7 +974,7 @@ void FindMatches(const vector<LabelBBox>& all_loc_preds,
       if (use_compensation) {
         MatchBBox(gt_bboxes, prior_bboxes, label, min_overlap, min_match, match_type,
                   overlap_threshold, ignore_cross_boundary_bbox,
-                  &match_indices[label], &match_overlaps[label]);
+                  &temp_match_indices, &temp_match_overlaps);
       }
       else {
         MatchBBox(gt_bboxes, prior_bboxes, label, match_type, 
