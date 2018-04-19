@@ -734,8 +734,9 @@ void MatchBBox(const vector<NormalizedBBox>& gt_bboxes,
       // no need to match more predictions
       continue;
     }
-    for (map<float, int>::iterator it = overlaps_larger[j].end();
-         it != overlaps_larger[j].begin(); --it) {
+    for (map<float, int>::reverse_iterator it = overlaps_larger[j].rbegin();
+         it != overlaps_larger[j].rend(); ++it) {
+      //LOG(WARNING) << j << "th IoU: "<< it->first <<" i: "<<it->second;
       if (match_num[j] >= min_match){
         break;
       }
