@@ -1,6 +1,6 @@
 #coding=utf-8
 #this code is used for extracting features
-import seaborn as sns
+#import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import savemat
@@ -13,17 +13,18 @@ import cv2
 sys.path.insert(0, caffe_root + 'python')
 import caffe
 import math
+import time
 
-writeProposals = 1
+writeProposals = 0
 
 drawGth = 0
-drawResults = 0
+drawResults = 1
 showResults = 1
 
-experiment_name = 'sfd-fpn-640kernel1-1024'
+experiment_name = 'pic'
 caffe.set_mode_gpu()
-net = caffe.Net('/home/smiles/hz/caffe-ssd/models/sfd_models/VGGNet/WIDER_FACE/SFD/fpn/640/deploy.prototxt',
-                '/home/smiles/hz/caffe-ssd/models/sfd_models/VGGNet/WIDER_FACE/SFD/fpn/640/VGG_WIDER_FACE_SFD_fpn_640_iter_120000.caffemodel',
+net = caffe.Net('/home/smiles/hz/caffe-ssd/models/sfd_models/VGGNet/WIDER_FACE/SFD/fpn/640elewise/compensation/deploy.prototxt',
+                '/home/smiles/hz/caffe-ssd/models/sfd_models/VGGNet/WIDER_FACE/SFD/fpn/640elewise/compensation/VGG_WIDER_FACE_SFD_fpn_640_iter_115000.caffemodel',
                 caffe.TEST)
 # set net to batch size of 50
 net.blobs['data'].reshape(1,3,640,640)
@@ -72,7 +73,7 @@ def drawFaces(img, faces, ellipses):
         xmax = int(face[1])
         ymin = int(face[2])
         ymax = int(face[3])
-        #cv2.putText(img,str(prob),(max(int(xmin),0), max(int(ymin),0)),font,0.4,(0,0,255),1)#添加文字，1.2表示字体大小，（0,40）是初始的位置，(255,255,255)表示颜色，2表示粗细
+        cv2.putText(img,str(prob),(max(int(xmin),0), max(int(ymin),0)),font,0.2,(0,0,255),1)#添加文字，1.2表示字体大小，（0,40）是初始的位置，(255,255,255)表示颜色，2表示粗细
         cv2.rectangle( img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), (0,255,0) )
     for ellipse in ellipses:      
         centerx = int( float(ellipse[3]) )
@@ -93,6 +94,8 @@ if writeProposals:
     ff = open("/home/smiles/hz/databases/FDDB/evaluation/proposals/"+experiment_name+".txt", 'w')
 '''
 
+count = 0
+t = time.time()
 while line:
     print line
     img = cv2.imread(line)
@@ -115,6 +118,14 @@ while line:
     net.blobs['data'].data[...] = img_
     out = net.forward()
     boxes = net.blobs['detection_out'].data
+
+    # count += 1
+    # if count >=1000:
+    #     print 'time:'+str((time.time()-t)/1000.)
+    #     exit()
+    # line = f.readline().strip('\n')
+    # continue
+
     thresh = 0.1
     faces = process(boxes, wpic, hpic, thresh)
 
@@ -139,6 +150,7 @@ while line:
         if drawResults:
             templist = line.split('/')
             picpath = "/home/smiles/hz/databases/WIDER-face/proposal_results/"+experiment_name+"/"+'/'.join( templist[len(templist)-4:len(templist)-1] )
+            picpath = "/home/smiles/hz/"+experiment_name+"/"+'/'.join( templist[len(templist)-4:len(templist)-1] )
             if not os.path.isdir(picpath):
                 #print 'New experiment. Good luck!'
                 os.makedirs(picpath)

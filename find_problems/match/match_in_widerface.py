@@ -1,6 +1,6 @@
 #coding=utf-8
 #this code is used for extracting features
-import seaborn as sns
+#import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import savemat
@@ -80,11 +80,11 @@ def match(gths, steps, anchorSizes, thresh):
                 gth[2] = int(area**0.5)
                 gth[3] = int(area**0.5)
         '''
-        # small objects
-        if gth[2] < 10 or gth[3] < 10:    
-            #gth[2] = max(gth[2],gth[3])
-            #gth[3] = max(gth[2],gth[3])
-            th = 0.1  
+        # # small objects
+        # if gth[2] < 10 or gth[3] < 10:    
+        #     #gth[2] = max(gth[2],gth[3])
+        #     #gth[3] = max(gth[2],gth[3])
+        #     th = 0.1  
  
         for step, anchorSize in zip(steps, anchorSizes):
             bx = gth[0]/step
@@ -150,6 +150,9 @@ def drawBox(img, boxes, color):
         xmin,xmax,ymin,ymax = xywh2xxyy(face)
         cv2.rectangle( img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color )
 
+def ratio_adjust(ratio, anchor_size):
+    return [anchor_size*pow(ratio, 0.5), anchor_size/pow(ratio, 0.5)]
+    
 if __name__=="__main__":
     picListFile = "/home/smiles/hz/databases/WIDER-face/annotation_2017/WIDER_val.txt"
     gen = getGthLine(picListFile) 
@@ -168,9 +171,14 @@ if __name__=="__main__":
         #steps = [4,4,8,8,16,32,64,128]
         #anchorSizes = [6,12,24,40,80,128,256,512]
         #sfd settings
-        steps = [4,4,8,16,32,64,128]
-        anchorSizes = [8,16,32,64,128,256,512]
+        steps = [4,8,16,32,64,128]
+        anchorSizes = [16]
+        extra = [32,64,128,256,512]
         # ratio: 0.76
+        anchorSizes += [ratio_adjust(0.76, x) for x in extra]
+        # anchorSizes += extra
+        #print anchorSizes
+        #exit()
         #anchorSizes = [8,[7,9],[14,18],[28,37],[56,73],[112,146],[223,294],[446,587],[543,1086]]
         #anchorSizes = [16,[28,37],[56,73],[112,146],[223,294],[446,587]]
         
